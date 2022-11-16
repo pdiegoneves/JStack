@@ -1,16 +1,25 @@
 const http = require('http')
-const users = require('./mocks/users')
+const url = require('url')
 
-const server = http.createServer((request, response) =>{
-    console.log(`Request dethod: ${request.method} | Endpoint: ${request.url}`)
+const routes = require('./routes')
+const server = http.createServer((request, response) => {
+    const parsedUrl = url.parse(request.url)
 
-    if(request.url === '/users' && request.method === 'GET'){
-        response.writeHead(200, { 'content-type': 'application/json'})
-        response.end('')
+    console.log(`Request method: ${request.method} | Endpoint: ${parsedUrl.pathname}`)
+
+    const route = routes.find((routeObj) => (
+        routeObj.endpoint === parsedUrl.pathname && routeObj.method === request.method
+    ))
+
+    console.log(route)
+
+    if (route) {
+        route.handler(request, response)
+    } else {
+        response.writeHead(404, { 'content-type': 'text/html'})
+        response.end(`Cannot ${request.method} ${parsedUrl.pathname}`)
     }
 
-    response.writeHead(200, { 'content-type': 'text/html'})
-    response.end('<h1>Ola Mundo!</h1>')
 })
 
 server.listen(3000, () => {
