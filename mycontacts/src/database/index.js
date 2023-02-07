@@ -1,6 +1,4 @@
-const { query } = require('express');
 const { Client } = require('pg');
-const { client_encoding } = require('pg/lib/defaults');
 
 const client = new Client({
   host: 'localhost',
@@ -12,7 +10,7 @@ const client = new Client({
 
 client.connect();
 
-exports.query = async (query) => {
-  const { rows } = await client.query(query);
+exports.query = async (query, values) => {
+  const { rows } = await client.query(query, values);
   return rows;
 };
